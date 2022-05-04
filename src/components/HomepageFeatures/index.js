@@ -4,32 +4,33 @@ import styles from './styles.module.css';
 
 const FeatureList = [
   {
-    title: 'Easy to Use',
+    title: 'Agent Centric',
     Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
+        Agents represent humans with their devices, which is what the internet actually is.
+        Technically represented as Decentralized Identifier - DID.
       </>
     ),
   },
   {
-    title: 'Focus on What Matters',
+    title: 'Rich Languages',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        Languages encapsulate the actual technology used to communicate, like Holochain or IPFS,
+        but what they provide to the high-level layers is this: Languages define Expressions,
+        which are the atoms of what Agents communicate. Expressions are always created, and thus signed, by an agent.
       </>
     ),
   },
   {
-    title: 'Powered by React',
+    title: 'Authenticated Perspectives',
     Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        Perspectives belong to a specific agent. They represent context and association between expressions.
+        They consist of a list of RDF/semantic web like triplets (subject-predicate-obejct) called links because all three items are just URLs pointing to expressions.
       </>
     ),
   },
