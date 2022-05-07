@@ -55,4 +55,6 @@ Follow [this guide](https://github.com/nicokaiser/nginx-websocket-proxy) to conf
 ## Change endpoint in client
 
 Search in client code, replace `ws://localhost:4000/graphql` to `ws://<your-ip>:4000/graphql`, use wss if secure connection is configured.
-For example, [flux](https://github.com/fluxsocial/flux) and its dependency [perspective-views](https://github.com/fluxsocial/perspective-views).
+For example, [flux](https://github.com/fluxsocial/flux) and its dependency [perspective-views](https://github.com/fluxsocial/perspective-views) see [these changes](https://github.com/fluxsocial/flux/compare/dev...remote-host), note that chat-view and flux is changed but hardcoded to a fixed ip address, you need to update the ip, and use your own chat-view package.
+
+TODO make the endpoint in chat-view read from props.
