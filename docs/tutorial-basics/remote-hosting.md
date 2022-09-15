@@ -5,56 +5,89 @@ sidebar_position: 1
 # Remote Hosting
 
 Run ad4m GraphQL services on a public server, test on these platforms, 
-* Ubuntu
+* Ubuntu 22.04
 
-## Start ad4m service
+## Run with binaries
 
-Download ad4m-host binary and change permission to be executable, you many need to change the version.
-```shell
-wget -O ad4m https://github.com/perspect3vism/ad4m-host/releases/download/v0.0.18/ad4m-linux-x64
-chmod +x ./ad4m
-```
+### AD4M
 
-Start a new background session, then initialize and run ad4m service,
+**Prepare ad4m binary,**
 
 ```shell
-# it gives us a background session, named ad4m, exit the session with `ctrl+a+d`
-screen -S ad4m
-
-# allow connection bypass firewall
-sudo ufw allow 4000
-
-# init ad4m
-./ad4m init
-
-# run service
-./ad4m serve
+git clone https://github.com/fluxsocial/remote-ad4m.git
+cd remote-ad4m
+./scripts/setup-binaries.sh # terminate it before run ad4m with systemd
 ```
 
-## Secure connection
+_Known Issues:_
 
-TODO support wss with niginx,
+Issue: libssl.so.1.1: cannot open shared object file: No such file or directory
 
-Download nginx, and bypass firewall,
-```shell
-sudo apt install nginx
-sudo systemctl start nginx
-sudo ufw app list
-sudo ufw allow 'Nginx HTTP'
-```
-Go to website `http://<your-ip>`, the nginx welcome page should be shown if everything works.
-
-Generate self-signed certificate with `openssl`,
+Fix:
 
 ```shell
-sudo openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-ad4m.key -out /etc/ssl/certs/nginx-ad4m.crt
+wget http://nz2.archive.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
+sudo dpkg -i libssl1.1_1.1.1f-1ubuntu2.16_amd64.deb
 ```
 
-Follow [this guide](https://github.com/nicokaiser/nginx-websocket-proxy) to configure the wss in nginx.
+**Run binary with systemd,**
 
-## Change endpoint in client
+```shell
+touch /etc/systemd/system/ad4m.service
+```
 
-Search in client code, replace `ws://localhost:4000/graphql` to `ws://<your-ip>:4000/graphql`, use wss if secure connection is configured.
-For example, [flux](https://github.com/fluxsocial/flux) and its dependency [perspective-views](https://github.com/fluxsocial/perspective-views) see [these changes](https://github.com/fluxsocial/flux/compare/dev...remote-host), note that chat-view and flux is changed but hardcoded to a fixed ip address, you need to update the ip, and use your own chat-view package.
+Add following config to ad4m.service,
+```
+[Unit]
+Description=ad4m
 
-TODO make the endpoint in chat-view read from props.
+[Service]
+ExecStart=/bin/bash -c 'killall holochain || killall lair-keystore || (./root/ad4m/remote-ad4m/scripts/setup-binaries.sh > /root/ad4m/remote-ad4m/log 2>&1)'
+Restart=always
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Start the service,
+
+```shell
+systemctl enable ad4m.service
+systemctl start ad4m.service
+systemctl status ad4m.service
+
+# view logs
+journalctl -f -u ad4m
+```
+
+### Caddy
+
+Install Caddy,
+
+```shell
+sudo apt install -y debian-keyring debian-archive-keyring apt-transport-https
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/gpg.key' | sudo gpg --dearmor -o /usr/share/keyrings/caddy-stable-archive-keyring.gpg
+curl -1sLf 'https://dl.cloudsmith.io/public/caddy/stable/debian.deb.txt' | sudo tee /etc/apt/sources.list.d/caddy-stable.list
+sudo apt update
+sudo apt install caddy
+```
+
+Caddyfile,
+
+```
+your-subdomain.example.com {
+  reverse_proxy http://127.0.0.1:12000
+  tls {
+    on_demand
+  }
+}
+```
+
+```shell
+caddy stop
+caddy start
+```
+
+## Run with Docker
+

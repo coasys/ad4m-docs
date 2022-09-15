@@ -36,7 +36,14 @@ screen -S lt
 DEBUG=* bin/server.js --domain proxy.ad4m.dev --port 3000 --secure
 ```
 
+## Use Caddy
+
+
+
+
 ## Install and Configure Nginx
+
+If you already use Caddy, no need to use Nginx, skip this step.
 
 ```shell
 sudo apt update
@@ -154,7 +161,10 @@ Ensure 80, 443, 1000~65535 is open with Firewall, Security Group and ufw
 ```shell
 ufw allow https
 ufw allow http
+ufw allow ssh
 ufw allow 1000:65535/tcp
+
+ufw enable
 
 ufw status
 ```
