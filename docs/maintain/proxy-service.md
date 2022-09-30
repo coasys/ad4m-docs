@@ -37,11 +37,11 @@ Description=localtunnel
 
 [Service]
 Environment=DEBUG=*
-ExecStart=/root/.nvm/versions/node/v16.17.1/bin/node /root/lt/mytunnel-server/bin/server.js --domain proxy.ad4m.dev --port 3000 --secure > /root/lt/proxy-log 2>&1
+ExecStart=/ubuntu/.nvm/versions/node/v16.17.1/bin/node /ubuntu/lt/mytunnel-server/bin/server.js --domain proxy.ad4m.dev --port 3000 --secure > /ubuntu/lt/proxy-log 2>&1
 Restart=always
 RestartSec=10
-StandardOutput=append:/root/lt/proxy-log
-StandardError=append:/root/lt/proxy-log
+StandardOutput=append:/ubuntu/lt/proxy-log
+StandardError=append:/ubuntu/lt/proxy-log
 
 [Install]
 WantedBy=multi-user.target

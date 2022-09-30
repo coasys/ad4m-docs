@@ -42,7 +42,7 @@ Add following config to ad4m.service,
 Description=ad4m
 
 [Service]
-ExecStart=/bin/bash -c 'killall holochain || killall lair-keystore || (./root/ad4m/remote-ad4m/scripts/setup-binaries.sh > /root/ad4m/remote-ad4m/log 2>&1)'
+ExecStart=/bin/bash -c 'killall holochain || killall lair-keystore || (./ubuntu/ad4m/remote-ad4m/scripts/setup-binaries.sh > /ubuntu/ad4m/remote-ad4m/log 2>&1)'
 Restart=always
 RestartSec=10
 
@@ -93,3 +93,17 @@ caddy start
 
 TODO
 
+
+## Sync data
+
+Sync local `.ad4m` data folder to remote server,
+
+```shell
+rsync -az --exclude=binary --exclude=swipl ~/.ad4m/ ubuntu@proxy.ad4m.dev:~/.ad4m
+```
+
+Sync remote `.ad4m` data to local machine,
+
+```shell
+rsync -az --exclude=binary --exclude=swipl ubuntu@proxy.ad4m.dev:~/.ad4m/ ~/.ad4m
+```
