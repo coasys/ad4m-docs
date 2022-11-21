@@ -15,7 +15,28 @@ You can now login the server with SSH,
 ssh ubuntu@proxy.ad4m.dev
 ```
 
-## Install Node and localtunnel
+## Install Rust and localtunnel
+
+```shell
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```
+
+```shell
+cargo install localtunnel
+
+localtunnel server --domain proxy-sg.ad4m.dev --port 3000 --proxy-port 3001 --secure --require-auth
+```
+
+*Known issues:*
+
+> failed to run custom build command for `openssl-sys v0.9.77`
+
+Install libssl,
+```shell
+sudo apt install libssl-dev
+```
+
+## Install Node and localtunnel (deprecated!)
 
 ```
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
