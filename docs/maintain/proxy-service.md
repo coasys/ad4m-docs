@@ -24,7 +24,14 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```shell
 cargo install localtunnel
 
-localtunnel server --domain proxy-sg.ad4m.dev --port 3000 --proxy-port 3001 --secure --require-auth
+# Set credentials
+
+export CLOUDFLARE_ACCOUNT=xxx
+export CLOUDFLARE_NAMESPACE=xxx
+export CLOUDFLARE_AUTH_EMAIL=xxx
+export CLOUDFLARE_AUTH_KEY=xxx
+
+localtunnel server --domain proxy-de.ad4m.dev --port 3000 --proxy-port 3001 --secure --require-auth
 ```
 
 *Known issues:*
@@ -36,33 +43,24 @@ Install libssl,
 sudo apt install libssl-dev
 ```
 
-## Install Node and localtunnel (deprecated!)
-
-```
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
-nvm install v16
-```
-
-```
-git clone https://github.com/StyleT/mytunnel-server.git
-cd mytunnel-server
-npm install
-```
-
 ## Run localtunnel with systemd
 
 Add a systemd service `/etc/systemd/system/localtunnel.service` with following content,
 
 ```
+[Unit]
 Description=localtunnel
 
 [Service]
-Environment=DEBUG=*
-ExecStart=/ubuntu/.nvm/versions/node/v16.17.1/bin/node /ubuntu/lt/mytunnel-server/bin/server.js --domain proxy.ad4m.dev --port 3000 --secure > /ubuntu/lt/proxy-log 2>&1
+Environment="CLOUDFLARE_ACCOUNT=xxx"
+Environment="CLOUDFLARE_NAMESPACE=xxx"
+Environment="CLOUDFLARE_AUTH_EMAIL=xxx"
+Environment="CLOUDFLARE_AUTH_KEY=xxx"
+Environment="RUST_LOG=debug"
+Environment="RUST_BACKTRACE=1"
+ExecStart=/root/.cargo/bin/localtunnel server --domain proxy-de.ad4m.dev --port 3000 --proxy-port 3001 --secure --require-auth
 Restart=always
 RestartSec=10
-StandardOutput=append:/ubuntu/lt/proxy-log
-StandardError=append:/ubuntu/lt/proxy-log
 
 [Install]
 WantedBy=multi-user.target
@@ -91,15 +89,22 @@ sudo apt update
 sudo apt install caddy
 ```
 
-Caddyfile,
+Create and modify Caddyfile,
+
+```shell
+touch Caddyfile
+```
 
 ```
-proxy.ad4m.dev {
+proxy-de.ad4m.dev {
   reverse_proxy http://127.0.0.1:3000
+  tls {
+    on_demand
+  }
 }
 
-*.proxy.ad4m.dev {
-  reverse_proxy http://127.0.0.1:3000
+*.proxy-de.ad4m.dev {
+  reverse_proxy http://127.0.0.1:3001
   tls {
     on_demand
   }
@@ -125,3 +130,17 @@ ufw status
 ```
 
 Note: *You may also need to open the ports with Firewall settings from cloud provider.*
+
+
+## Install Node and localtunnel (deprecated!)
+
+```
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash
+nvm install v16
+```
+
+```
+git clone https://github.com/StyleT/mytunnel-server.git
+cd mytunnel-server
+npm install
+```
