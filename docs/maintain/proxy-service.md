@@ -112,8 +112,21 @@ proxy-de.ad4m.dev {
 ```
 
 ```shell
+# use systemd instead
 caddy stop
 caddy start
+```
+
+Make new caddyfile the default config of caddy.service,
+
+```shell
+systemctl status caddy.service
+systemctl stop caddy.service
+
+cp /etc/caddy/Caddyfile /etc/caddy/Caddyfile-origin
+cp ~/caddy/Caddyfile /etc/caddy/Caddyfile
+
+systemctl start caddy.service
 ```
 
 ## Configure Firewall
